@@ -135,16 +135,23 @@ class TestSummary {
 
     let message = "";
 
-    if (filePath) {
-      message += `[${filePath}`;
-      if (!isNaN(line))
-        message += `:${line}`;
+    // TODO: Disable custom message structure for now since raw error output is more helpful
+    // if (filePath) {
+    //   message += `[${filePath}`;
+    //   // TODO: Disable line number for now since it doesn't work properly
+    //   // if (!isNaN(line))
+    //   //   message += `:${line}`;
+    //
+    //   message += "] ";
+    // }
+    //
+    // if (failure.$ && failure.$.message)
+    //   message += `'${failure.$.message}' (${failure.$.type})`;
+    //
+    // if (failure._)
+    //   message += `\n\n${failure._}`;
 
-      message += "] ";
-    }
-
-    if (failure.$ && failure.$.message)
-      message += `"${failure.$.message}"`;
+    message += `${failure.$.type}:\n\n ${failure._}`
 
     return message;
   }
