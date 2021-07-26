@@ -151,7 +151,17 @@ class TestSummary {
     // if (failure._)
     //   message += `\n\n${failure._}`;
 
-    message += `${failure.$.type}:\n\n ${failure._}`
+    // Seems to exist for the Rspec test output structure but not Jest
+    if (failure.$ && failure.$.type)
+      message += `${failure.$.type}: \n\n`;
+
+    // Seems to be the Jest test output structure
+    if (typeof failure === 'string')
+      message += failure;
+    // Seems to be the Rspec test output structure
+    else if (failure._)
+      message += failure._;
+
 
     return message;
   }
