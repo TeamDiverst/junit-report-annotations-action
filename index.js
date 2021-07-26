@@ -101,9 +101,13 @@ class TestSummary {
   }
 
   async handleTestCase(testcase, file) {
+    console.log(testcase);
+
     if (!testcase.failure) {
       return;
     }
+
+    console.log(testcase.failure);
 
     if (this.maxNumFailures !== -1 && this.annotations.length >= this.maxNumFailures) {
       return;
