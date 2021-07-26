@@ -1,9 +1,11 @@
 # junit-report-annotations-action
 Create an annotation of the build information and also list first n failed tests as seporate annotations
 
+Note: Forked from https://github.com/ashley-taylor/junit-report-annotations-action in order to adjust functionality for our own use.
+
 ## Example
 ```
-    - uses: ashley-taylor/junit-report-annotations-action@1.3
+    - uses: TeamDiverst/junit-report-annotations-action@master
       if: always()
       with:
         access-token: ${{ secrets.GITHUB_TOKEN }}
