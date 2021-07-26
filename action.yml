@@ -17,12 +17,16 @@ inputs:
     default: true
   numFailures:
     description: "max number of failed tests to include"
-    require: true
+    required: true
     default: 10
   name:
     description: "Name of the Check in the github actions UI"
-    require: true
+    required: true
     default: "Junit Results"
+  testJobName:
+    description: "Name of the test job"
+    required: true
+    default: "Tests"
 runs:
   using: "node12"
   main: "index.js"
