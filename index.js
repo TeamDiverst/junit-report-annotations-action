@@ -111,6 +111,8 @@ class TestSummary {
 
     const {filePath, line} = await module.exports.findTestLocation(file, testcase);
 
+    // TODO: Doesn't seem to properly retrieve the path for frontend tests (probably because they're in a subdirectory? Not sure)
+    //       and the line number doesn't work for backend or frontend. Also need a stacktrace?
     this.annotations.push({
       path: filePath,
       start_line: line,
@@ -118,19 +120,29 @@ class TestSummary {
       // start_column: 0,
       // end_column: 0,
       annotation_level: "failure",
-      title: testcase.$.name,
-      message: TestSummary.formatFailureMessage(testcase),
+      title: `${this.jobName}: ${testcase.$.name}`,
+      message: TestSummary.formatFailureMessage(testcase, filePath, line),
       raw_details: testcase.failure[0]._ || 'No details'
     });
   }
 
-  static formatFailureMessage(testcase) {
+  static formatFailureMessage(testcase, filePath = null, line = null) {
     const failure = testcase.failure[0];
-    if (failure.$ && failure.$.message) {
-      return `'${testcase.$.name}' failed with: "${failure.$.message}"`;
-    } else {
-      return `'${testcase.$.name}' failed`;
+
+    let message = "";
+
+    if (filePath) {
+      message += `[${filePath}`;
+      if (!isNaN(line))
+        message += `:${line}`;
+
+      message += "] ";
     }
+
+    if (failure.$ && failure.$.message)
+      message += `"${failure.$.message}"`;
+
+    return message;
   }
 
   isFailedOrErrored() {
