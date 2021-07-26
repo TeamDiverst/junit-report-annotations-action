@@ -8,15 +8,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ashley-taylor/junit-report-annotations-action.git"
+    "url": "git+https://github.com/TeamDiverst/junit-report-annotations-action.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/ashley-taylor/junit-report-annotations-action/issues"
-  },
-  "homepage": "https://github.com/ashley-taylor/junit-report-annotations-action#readme",
+  "homepage": "https://github.com/TeamDiverst/junit-report-annotations-action#readme",
   "dependencies": {
     "@actions/core": "^1.2.3",
     "@actions/github": "^2.1.1",
