@@ -12,12 +12,14 @@ const path = require("path");
     const numFailures = core.getInput("numFailures");
     const accessToken = core.getInput("access-token");
     const name = core.getInput("name");
+    const testJobName = core.getInput("testJobName");
     const globber = await glob.create(inputPath, {
       followSymbolicLinks: false,
     });
 
     let testSummary = new TestSummary();
     testSummary.maxNumFailures = numFailures;
+    testSummary.jobName = testJobName; // Include the passed in name in the summary text instead of generic "Junit Results"
 
     for await (const file of globber.globGenerator()) {
       const testsuites = await readTestSuites(file);
@@ -26,25 +28,28 @@ const path = require("path");
       }
     }
 
-    const annotation_level = testSummary.isFailedOrErrored() ? "failure" : "notice";
-    const annotation = {
-      path: "test",
-      start_line: 0,
-      end_line: 0,
-      start_column: 0,
-      end_column: 0,
-      annotation_level,
-      message: testSummary.toFormattedMessage(),
-    };
-
     const conclusion = testSummary.annotations.length === 0 ? "success" : "failure";
-    testSummary.annotations = [annotation, ...testSummary.annotations];
+
+    // Don't include this summary annotation if 'includeSummary' input isn't true
+    if (includeSummary === true) {
+      const annotation_level = testSummary.isFailedOrErrored() ? "failure" : "notice";
+      const annotation = {
+        path: "test",
+        start_line: 0,
+        end_line: 0,
+        start_column: 0,
+        end_column: 0,
+        annotation_level,
+        message: testSummary.toFormattedMessage(),
+      };
+
+      testSummary.annotations = [annotation, ...testSummary.annotations];
+    }
 
     const pullRequest = github.context.payload.pull_request;
     const link = (pullRequest && pullRequest.html_url) || github.context.ref;
     const status = "completed";
-    const head_sha =
-      (pullRequest && pullRequest.head.sha) || github.context.sha;
+    const head_sha = (pullRequest && pullRequest.head.sha) || github.context.sha;
     const annotations = testSummary.annotations;
 
     const createCheckRequest = {
@@ -70,6 +75,7 @@ const path = require("path");
 class TestSummary {
 
   maxNumFailures = -1;
+  jobName = "";
 
   numTests = 0;
   numSkipped = 0;
@@ -109,8 +115,8 @@ class TestSummary {
       path: filePath,
       start_line: line,
       end_line: line,
-      start_column: 0,
-      end_column: 0,
+      // start_column: 0,
+      // end_column: 0,
       annotation_level: "failure",
       title: testcase.$.name,
       message: TestSummary.formatFailureMessage(testcase),
@@ -121,9 +127,9 @@ class TestSummary {
   static formatFailureMessage(testcase) {
     const failure = testcase.failure[0];
     if (failure.$ && failure.$.message) {
-      return `Junit test ${testcase.$.name} failed ${failure.$.message}`;
+      return `'${testcase.$.name}' failed with: "${failure.$.message}"`;
     } else {
-      return `Junit test ${testcase.$.name} failed`;
+      return `'${testcase.$.name}' failed`;
     }
   }
 
@@ -132,7 +138,7 @@ class TestSummary {
   }
 
   toFormattedMessage() {
-    return `Junit Results ran ${this.numTests} in ${this.testDuration} seconds ${this.numErrored} Errored, ${this.numFailed} Failed, ${this.numSkipped} Skipped`;
+    return `${this.jobName} ran ${this.numTests} in ${this.testDuration} seconds ${this.numErrored} Errored, ${this.numFailed} Failed, ${this.numSkipped} Skipped`;
   }
 
 }
