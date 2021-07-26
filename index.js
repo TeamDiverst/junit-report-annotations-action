@@ -86,7 +86,7 @@ class TestSummary {
 
   async handleTestSuite(testsuite, file) {
     if (testsuite.$) {
-      this.testDuration += Number(testsuite.$.time) || 0;
+      this.testDuration += (Math.round(Number(testsuite.$.time) * 1000) / 1000) || 0; // Round duration to three decimal places
       this.numTests += Number(testsuite.$.tests) || 0;
       this.numErrored += Number(testsuite.$.errors) || 0;
       this.numFailed += Number(testsuite.$.failures) || 0;
@@ -138,7 +138,7 @@ class TestSummary {
   }
 
   toFormattedMessage() {
-    return `${this.jobName} ran ${this.numTests} in ${this.testDuration} seconds ${this.numErrored} Errored, ${this.numFailed} Failed, ${this.numSkipped} Skipped`;
+    return `${this.jobName} ran ${this.numTests} in ${this.testDuration} seconds: ${this.numErrored} Errored, ${this.numFailed} Failed, ${this.numSkipped} Skipped`;
   }
 
 }
