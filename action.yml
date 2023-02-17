@@ -28,5 +28,5 @@ inputs:
     required: true
     default: "Tests"
 runs:
-  using: "node12"
+  using: "node16"
   main: "index.js"
