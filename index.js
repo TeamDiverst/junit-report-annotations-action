@@ -70,7 +70,7 @@ const path = require("path");
       await octokit.checks.create(createCheckRequest);
     }
   } catch (error) {
-    core.setFailed(error.message);
+    core.setFailed(JSON.stringify(error));
   }
 })();
 
