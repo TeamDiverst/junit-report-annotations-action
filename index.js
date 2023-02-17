@@ -46,27 +46,29 @@ const path = require("path");
       testSummary.annotations = [annotation, ...testSummary.annotations];
     }
 
-    const pullRequest = github.context.payload.pull_request;
-    const link = (pullRequest && pullRequest.html_url) || github.context.ref;
-    const status = "completed";
-    const head_sha = (pullRequest && pullRequest.head.sha) || github.context.sha;
-    const annotations = testSummary.annotations;
+    if(testSummary.numTests > 0) {
+      const pullRequest = github.context.payload.pull_request;
+      const link = (pullRequest && pullRequest.html_url) || github.context.ref;
+      const status = "completed";
+      const head_sha = (pullRequest && pullRequest.head.sha) || github.context.sha;
+      const annotations = testSummary.annotations;
 
-    const createCheckRequest = {
-      ...github.context.repo,
-      name,
-      head_sha,
-      status,
-      conclusion,
-      output: {
-        title: name,
-        summary: testSummary.toFormattedMessage(),
-        annotations,
-      },
-    };
+      const createCheckRequest = {
+        ...github.context.repo,
+        name,
+        head_sha,
+        status,
+        conclusion,
+        output: {
+          title: name,
+          summary: testSummary.toFormattedMessage(),
+          annotations,
+        },
+      };
 
-    const octokit = new github.GitHub(accessToken);
-    await octokit.checks.create(createCheckRequest);
+      const octokit = new github.GitHub(accessToken);
+      await octokit.checks.create(createCheckRequest);
+    }
   } catch (error) {
     core.setFailed(error.message);
   }
